@@ -206,7 +206,18 @@ namespace HL7toXDocumentParser
                 {
                     if (!isHeader || fieldIndex != 1)
                     {
+                        // Add the component to the current repeat
+                        if (componentIndex > 1)
+                        {
+                            component = new XElement(segmentName + "." + fieldIndex + "." + componentIndex, token + val.Token);
+                            field.Add(component);
+                        }
 
+                        component = null;
+                        componentIndex = 1;
+                        subComponent = null;
+                        subComponentIndex = 1;
+                        token = "";
                     }
                 }
                 else if (val.Delimiter == escapeChar)

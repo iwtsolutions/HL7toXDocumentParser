@@ -1,10 +1,8 @@
-﻿using HL7toXDocumentParser;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Xml.Linq;
+﻿using System;
+using System.IO;
 using System.Xml;
+using System.Xml.Linq;
+using HL7toXDocumentParser;
 
 namespace Test
 {
@@ -30,8 +28,9 @@ PID|1||3410131027|34101315545^^^^NN|Vanhubulcke^Victor^^^Meneer|Vermeersch^Marte
 PD1||||003809^MATTELIN^GUY||||||||N
 PV1|1|O|5551^001^01^WIL|NULL|||003809^MATTELIN^GUY||000573^Bourgeois^Karel|1851|||||||000573^Bourgeois^Karel|0|80398500^^^^VN|3^20140318||||||||||||||||1|1||D|||||201403180830|201403181140";
 
-            // Test odd subcomponent combinations.
             doc = hl7Parser.Parse(hl7);
+
+            Console.WriteLine("Testing sub components");
             hl7 = getSampleHL7("sub_components.hl7");
             var xml = hl7Parser.Parse(hl7).ToXmlDocument();
 
@@ -47,6 +46,21 @@ PV1|1|O|5551^001^01^WIL|NULL|||003809^MATTELIN^GUY||000573^Bourgeois^Karel|1851|
             xml.testValue("//OBR.6/OBR.6.1/OBR.6.1.3", "uu181");
             xml.testValue("//OBR.6/OBR.6.3", "777");
             xml.testValue("//OBR.7", "another");
+            xml.testValue("//OBX.4/OBX.4.1/OBX.4.1.3", "uu181", 0);
+            xml.testValue("//OBX.4/OBX.4.1/OBX.4.1.3", "ii818", 1);
+            hl7Parser.Parse(hl7).Save(@"C:\users\mking\desktop\result.xml");
+
+            Console.WriteLine();
+            Console.WriteLine();
+
+            // Test repeats
+            Console.WriteLine("Testing repeated segments.");
+            hl7 = getSampleHL7("repeats.hl7");
+            xml = hl7Parser.Parse(hl7).ToXmlDocument();
+
+            xml.testValue("//PID.3[PID.3.3=\"MR\"]/PID.3.1", "1200010", 0);
+            xml.testValue("//PID.3[PID.3.3=\"SSN\"]/PID.3.1", "028551111", 0);
+            xml.testValue("//PID.7.1", "why", 1);
 
             Console.ReadKey();
         }
@@ -129,6 +143,5 @@ PV1|1|O|5551^001^01^WIL|NULL|||003809^MATTELIN^GUY||000573^Bourgeois^Karel|1851|
             return xmlDocument;
         }
 #endregion
-
     }
 }

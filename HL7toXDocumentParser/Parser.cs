@@ -156,10 +156,15 @@ namespace HL7toXDocumentParser
                                 field = new XElement(segmentName + "." + fieldIndex, token + val.Token);
                                 segment.Add(field);
                             }
-                            else
+                            else if (subComponentIndex == 1)
                             {
                                 component = new XElement(segmentName + "." + fieldIndex + "." + componentIndex, token + val.Token);
                                 field.Add(component);
+                            }
+                            else
+                            {
+                                subComponent = new XElement(segmentName + "." + fieldIndex + "." + componentIndex + "." + subComponentIndex, token + val.Token);
+                                component.Add(subComponent);
                             }
                         }
                         component = null;
@@ -174,7 +179,7 @@ namespace HL7toXDocumentParser
                 {
                     if (!isHeader || fieldIndex != 1)
                     {
-                        if (componentIndex == 1)
+                        if (componentIndex == 1 && subComponentIndex == 1)
                         {
                             field = new XElement(segmentName + "." + fieldIndex);
                             segment.Add(field);
@@ -263,7 +268,13 @@ namespace HL7toXDocumentParser
                 {
                     if (!isHeader || fieldIndex != 1)
                     {
-                        if (subComponentIndex == 1)
+                        if (subComponentIndex == 1 && componentIndex == 1)
+                        {
+                            field = new XElement(segmentName + "." + fieldIndex);
+                            segment.Add(field);
+                        }
+
+                        if (component == null || componentIndex > 1)
                         {
                             component = new XElement(segmentName + "." + fieldIndex + "." + componentIndex);
                             field.Add(component);
